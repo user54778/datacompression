@@ -19,3 +19,5 @@ func SelfInformation(probability float64, base float64) (float64, error) {
 	// NOTE: math.Log returns ln(x)
 	return -math.Log(probability) / math.Log(base), nil
 }
+
+func Entropy() {}
