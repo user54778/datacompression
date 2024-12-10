@@ -4,8 +4,16 @@ The purpose of this repository is for me to implement the concepts and solve sel
 
 ## Huffman
 
-* Includes a barebones implementation of a Huffman Code.
+* Includes a bare-bones implementation of a Huffman Code.
 
-## CCSDS (Consultative Committee on Space Data Standards)
+### Golomb
 
-* Includes the CCSDS implementation of the Rice code in the recommendation for lossless compression.
+* A basic Golomb encoder implementation. Needs the decoder.
+
+### Tunstall
+
+* A basic implementation of a Tunstall tree/code. Does not have the actual encoder or decoder.
+
+## Arithmetic Coding
+
+* Hard-coded implementation for a float-version arithmetic encoder/decoder.
