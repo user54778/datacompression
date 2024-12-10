@@ -1,0 +1,3 @@
+package unbounded
+
+func Encode() {}

@@ -2,12 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 
-	"arithcoding.adpollak.net/realbinary"
+	"arithcoding.adpollak.net/impractical"
 )
 
 func main() {
-	real := 0.8675309
-	b := realbinary.RealToBinary(real, 10)
-	fmt.Println(b)
+	s := []rune{'W', 'X', 'Y', 'Z'}
+	t, err := impractical.UnscaledEncodeArithmetic(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(t)
+	symbols, err := impractical.UnscaledDecodeArithmetic(t)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(symbols)
 }
