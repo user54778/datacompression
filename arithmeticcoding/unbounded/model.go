@@ -1,7 +1,6 @@
 package unbounded
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -20,28 +19,26 @@ func NewSymbol(currentProbability, cumulativeProbability float64, count int) *Sy
 }
 
 type Model struct {
-	Symbols    map[rune]Symbol
+	Symbols    map[string]Symbol
 	TotalCount int
 }
 
 func NewModel(totalCount int) *Model {
 	return &Model{
-		Symbols:    make(map[rune]Symbol),
+		Symbols:    make(map[string]Symbol),
 		TotalCount: totalCount,
 	}
 }
 
 func (m *Model) ComputeCount(symbols []rune) {
 	for _, r := range symbols {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') {
-			if v, ok := m.Symbols[r]; ok {
-				v.Count++
-				m.Symbols[r] = v
-			} else {
-				m.Symbols[r] = Symbol{Count: 1}
-			}
-			m.TotalCount++
+		if v, ok := m.Symbols[string(r)]; ok {
+			v.Count++
+			m.Symbols[string(r)] = v
+		} else {
+			m.Symbols[string(r)] = Symbol{Count: 1}
 		}
+		m.TotalCount++
 	}
 }
 
@@ -61,11 +58,11 @@ func (m *Model) ComputeCumulative() {
 		cum += p
 		s := NewSymbol(p, cum, kv.Value.Count)
 		m.Symbols[kv.Key] = *s
-		fmt.Printf("Symbol: %c, Probability: %f, CumulativeProbability: %f\n", kv.Key, s.CurrentProbability, s.CumulativeProbability)
+		// fmt.Printf("Symbol: %c, Probability: %f, CumulativeProbability: %f\n", kv.Key, s.CurrentProbability, s.CumulativeProbability)
 	}
 }
 
 type kv struct {
-	Key   rune
+	Key   string
 	Value Symbol
 }
