@@ -21,53 +21,66 @@ func Encode(data string, model *Model) {
 	//      shift l << 1; set 0 into LSB
 	//      shift h << 1; set 1 into LSB
 	//    9) otherwise, break out of infinite loop
-	// 10) output the tag
-	// 13) append our final tag to the output and return that
 	var l uint8 = 0
 	h := word
 	var pendingBits uint8
 	output := make([]byte, 0)
 
 	for _, r := range data {
-		w := h - l + 1
+		w := int16(h-l) + 1
 		p := model.Symbols[string(r)]
 
-		h = l + uint8((float64(w) * p.CurrentProbability))
+		fmt.Println("\n")
+		fmt.Printf("New character: %s\n", string(r))
+		fmt.Printf("Width: %d\n", w)
+		fmt.Printf("low: %d\n", l)
+		fmt.Printf("high: %d\n", h)
+		fmt.Printf("Current cumProb: %f, Current prob: %f\n", p.CumulativeProbability, p.CurrentProbability)
+
+		h = l + uint8((float64(w) * p.CurrentProbability)) - 1
 		l = l + uint8((float64(w) * p.CumulativeProbability))
+		fmt.Printf("Updated low: %d\n", l)
+		fmt.Printf("Updated high: %d\n", h)
 
 		for {
-			if h < (word >> 1) {
+			// if h < (word >> 1) {
+			if h < 0x80 {
+				fmt.Println("E1")
 				outputPendingBits(&output, &pendingBits, 0)
 				l <<= 1
 				h <<= 1
 				h |= 1
-				fmt.Println("E1")
-				fmt.Printf("Updated l: %b, Updated h: %b\n", l, h)
+				fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
 				fmt.Printf("Updated output: %b\n", output)
-			} else if l >= (word >> 1) {
+			} else if l >= 0x80 {
+				// word >> 1
+				fmt.Println("E2")
 				outputPendingBits(&output, &pendingBits, 1)
 				l <<= 1
 				h <<= 1
 				h |= 1
-				fmt.Println("E2")
-				fmt.Printf("Updated l: %#x, Updated h: %#x\n", l, h)
+				fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
 				fmt.Printf("Updated output: %b\n", output)
-			} else if l >= (word>>2) && h < ((word>>2)*3) {
+			} else if l >= (0x40) && h < (0xC0) {
+				fmt.Println("E3")
+				// word >> 2; (word >> 2) * 3
 				pendingBits++
 				l <<= 1
 				// l &= 0x7fffffff
 				l &= 0x7f
 				h <<= 1
 				// h |= 0x80000001
-				h |= 0x80
-				fmt.Println("E3")
-				fmt.Printf("Updated l: %#x, Updated h: %#x\n", l, h)
+				h |= 0x81
+				fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
 				fmt.Printf("Updated output: %b\n", output)
 			} else {
+				fmt.Println("E4; None.")
 				break
 			}
 		}
 	}
+	// NOTE: This needs to be included or else we leave off extra bits needed to encode.
+	pendingBits++
 	if l < (word >> 2) {
 		outputPendingBits(&output, &pendingBits, 0)
 	} else {

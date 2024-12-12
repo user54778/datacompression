@@ -1,6 +1,7 @@
 package unbounded
 
 import (
+	"math"
 	"sort"
 )
 
@@ -52,11 +53,11 @@ func (m *Model) ComputeCumulative() {
 		return ss[i].Value.Count > ss[j].Value.Count
 	})
 
-	cum := 0.0
+	cumProb := 0.0
 	for _, kv := range ss {
 		p := float64(kv.Value.Count) / float64(m.TotalCount)
-		cum += p
-		s := NewSymbol(p, cum, kv.Value.Count)
+		s := NewSymbol(p, cumProb, kv.Value.Count)
+		cumProb += p
 		m.Symbols[kv.Key] = *s
 		// fmt.Printf("Symbol: %c, Probability: %f, CumulativeProbability: %f\n", kv.Key, s.CurrentProbability, s.CumulativeProbability)
 	}
@@ -65,4 +66,8 @@ func (m *Model) ComputeCumulative() {
 type kv struct {
 	Key   string
 	Value Symbol
+}
+
+func roundProbability(f float64) float64 {
+	return math.Round(f*100) / 100
 }
