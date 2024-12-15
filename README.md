@@ -17,3 +17,11 @@ The purpose of this repository is for me to implement the concepts and solve sel
 ## Arithmetic Coding
 
 * Hard-coded implementation for a float-version arithmetic encoder/decoder.
+
+* A proper 8-bit encoder. Decoder needs to be implemented. Considering making a proper Go project of this.
+
+## Dictionary Coders
+
+### Digram Coding
+
+* A simple digram coder with a hard-coded dictionary.
