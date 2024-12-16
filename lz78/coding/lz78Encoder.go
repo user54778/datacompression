@@ -21,27 +21,16 @@ func (l *LZ78) LZ78Encode(sequence string) []Encoded {
 
 		if match := l.Trie.Find(prefix); match == 0 {
 			// fmt.Printf("Encoder Output: %d %s\n", l.Trie.Find(prefix[:len(prefix)-1]), prefix)
-
 			output = append(output, Encoded{
+				// Index:  l.Trie.NextIndex,
 				Index:  l.Trie.Find(prefix[:len(prefix)-1]),
-				Letter: string(r),
+				Letter: prefix,
 			})
 
 			l.Trie.Insert(prefix)
 			prefix = ""
 		}
 	}
-	/*
-		for r := 0; r < len(sequence); r++ {
-			prefix += string(sequence[r])
-
-			if match := l.Trie.Find(prefix); match == 0 {
-				//fmt.Printf("Encoder Output: %d %s\n", l.Trie.Find(prefix[:len(prefix)-1]), prefix)
-				l.Trie.Insert(prefix)
-				prefix = ""
-			}
-		}
-	*/
 	return output
 }
 
