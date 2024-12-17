@@ -25,3 +25,9 @@ The purpose of this repository is for me to implement the concepts and solve sel
 ### Digram Coding
 
 * A simple digram coder with a hard-coded dictionary.
+
+### LZ-Class Coders
+
+#### LZ78
+
+* A simple LZ78 dictionary coder backed via a Trie.
