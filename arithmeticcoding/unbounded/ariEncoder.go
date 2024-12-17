@@ -1,10 +1,8 @@
 package unbounded
 
-import "fmt"
-
 const word uint8 = 0xff
 
-func Encode(data string, model *Model) {
+func Encode(data string, model *Model) []byte {
 	// 1) init l, and h to word limit
 	// 2) read in every r
 	//  2a) get the prob of r
@@ -30,39 +28,30 @@ func Encode(data string, model *Model) {
 		w := int16(h-l) + 1
 		p := model.Symbols[string(r)]
 
-		fmt.Println("\n")
-		fmt.Printf("New character: %s\n", string(r))
-		fmt.Printf("Width: %d\n", w)
-		fmt.Printf("low: %d\n", l)
-		fmt.Printf("high: %d\n", h)
-		fmt.Printf("Current cumProb: %f, Current prob: %f\n", p.CumulativeProbability, p.CurrentProbability)
-
 		h = l + uint8((float64(w) * p.CurrentProbability)) - 1
 		l = l + uint8((float64(w) * p.CumulativeProbability))
-		fmt.Printf("Updated low: %d\n", l)
-		fmt.Printf("Updated high: %d\n", h)
 
 		for {
 			// if h < (word >> 1) {
 			if h < 0x80 {
-				fmt.Println("E1")
+				// fmt.Println("E1")
 				outputPendingBits(&output, &pendingBits, 0)
 				l <<= 1
 				h <<= 1
 				h |= 1
-				fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
-				fmt.Printf("Updated output: %b\n", output)
+				// fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
+				// fmt.Printf("Updated output: %b\n", output)
 			} else if l >= 0x80 {
 				// word >> 1
-				fmt.Println("E2")
+				// fmt.Println("E2")
 				outputPendingBits(&output, &pendingBits, 1)
 				l <<= 1
 				h <<= 1
 				h |= 1
-				fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
-				fmt.Printf("Updated output: %b\n", output)
+				// fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
+				// fmt.Printf("Updated output: %b\n", output)
 			} else if l >= (0x40) && h < (0xC0) {
-				fmt.Println("E3")
+				// fmt.Println("E3")
 				// word >> 2; (word >> 2) * 3
 				pendingBits++
 				l <<= 1
@@ -71,10 +60,10 @@ func Encode(data string, model *Model) {
 				h <<= 1
 				// h |= 0x80000001
 				h |= 0x81
-				fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
-				fmt.Printf("Updated output: %b\n", output)
+				// fmt.Printf("Updated l: %d, Updated h: %d\n", l, h)
+				// fmt.Printf("Updated output: %b\n", output)
 			} else {
-				fmt.Println("E4; None.")
+				// fmt.Println("E4")
 				break
 			}
 		}
@@ -87,12 +76,13 @@ func Encode(data string, model *Model) {
 		outputPendingBits(&output, &pendingBits, 1)
 	}
 
-	fmt.Println("Final output", output)
+	// out := fmt.Sprintf("%v", output)
+	return output
 }
 
 func outputPendingBits(output *[]byte, pendingBits *uint8, inBit byte) {
 	*output = append(*output, inBit)
-	fmt.Println("Pending bits: ", *pendingBits)
+	// fmt.Println("Pending bits: ", *pendingBits)
 	for i := *pendingBits; i > 0; i-- {
 		*output = append(*output, inBit^1)
 	}
